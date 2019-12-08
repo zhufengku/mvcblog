@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:c="http://www.springframework.org/schema/c"
+	xmlns:cache="http://www.springframework.org/schema/cache"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:lang="http://www.springframework.org/schema/lang"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
+		http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd
+		http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+	<!-- 配置控制器扫描的位置 -->
+	<context:component-scan base-package="com.thzhima.mvcblog.Controllers"></context:component-scan>
+	
+	<!-- 将springmvc不能处理的请求交给tomcat -->
+	<mvc:default-servlet-handler/>
+	<!-- 能支持JSE303校验，快捷的ajax,映射动态请求 -->
+	<mvc:annotation-driven></mvc:annotation-driven>
+	
+	<!-- 配置SpringMVC视图解析器，将ModelAndView及字符串解析为具体的页面 -->
+	<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver" 
+		  p:viewClass="org.springframework.web.servlet.view.JstlView"
+	      p:suffix=".jsp"></bean>
+	
+	    <!-- 文件上传 -->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"
+	    p:maxUploadSize="1024000000"
+	    p:uploadTempDir="/photo"
+	    p:maxInMemorySize="10240"
+	    p:defaultEncoding="utf-8"/>
+	
+	
+	<!-- 拦截器,如果有多个拦截器，运行模式和过滤器相似，都先不返回，执行到最后时在逐一返回 -->
+	<mvc:interceptors>	
+		<!-- 拦截包里的所有 -->
+		<mvc:interceptor>
+                 <mvc:mapping path="/*"/>					
+					<bean class="com.thzhima.mvcblog.Interceotors.SetCharSetInterceptor"></bean>
+				 </mvc:interceptor>
+	</mvc:interceptors>
+	
+	
+	<!-- 以JSON形式返回结果 -->
+		<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+			<property name="cacheSeconds" value="0"></property>
+			<property name="messageConverters">
+				<list>
+					<bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+					</bean>
+				</list>
+			</property>
+		</bean>
+
+
+
+</beans>
